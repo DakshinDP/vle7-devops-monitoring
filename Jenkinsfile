@@ -5,7 +5,13 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'minikube image build -t myapp:latest .'
+                sh 'docker build -t myapp:latest .'
+            }
+        }
+
+        stage('Load Image into Minikube') {
+            steps {
+                sh 'minikube image load myapp:latest'
             }
         }
 
