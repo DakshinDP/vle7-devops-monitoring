@@ -5,13 +5,10 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t myapp:latest .'
-            }
-        }
-
-        stage('Load Image into Minikube') {
-            steps {
-                sh 'minikube image load myapp:latest'
+                sh '''
+                    eval $(minikube docker-env)
+                    docker build -t myapp:latest .
+                '''
             }
         }
 
@@ -24,8 +21,8 @@ pipeline {
 
         stage('Verify Deployment') {
             steps {
-                sh 'kubectl rollout status deployment/myapp'
-                sh 'kubectl get pods'
+                sh 'kubectl rollout status deployment/myapp --timeout=120s'
+                sh 'kubectl get pods -l app=myapp'
                 sh 'kubectl get service myapp-service'
             }
         }
